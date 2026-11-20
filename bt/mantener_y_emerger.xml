@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- Mantiene la posición 30 s y emerge; si algo falla, parada de emergencia. -->
+<root main_tree_to_execute="mantener_y_emerger">
+  <BehaviorTree ID="mantener_y_emerger">
+    <Fallback name="Con plan B">
+      <Sequence name="Plan A">
+        <HoldPosition name="Mantener posición"/>
+        <Wait name="Esperar 30 s" seconds="30"/>
+        <Surface name="Emerger" timeout="120"/>
+      </Sequence>
+      <EmergencyStop name="Parada de emergencia"/>
+    </Fallback>
+  </BehaviorTree>
+</root>

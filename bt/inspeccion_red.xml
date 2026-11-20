@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- Baja a 3 m, recorre la red en cortacésped y emerge. Aborta si hay fuga o poca batería. -->
+<root main_tree_to_execute="inspeccion_red">
+  <BehaviorTree ID="inspeccion_red">
+    <ReactiveSequence name="Vigilar y ejecutar">
+      <NoLeak name="Sin fugas"/>
+      <BatteryAbove name="Batería > 30 %" percent="30"/>
+      <Sequence name="Inspección">
+        <GoToDepth name="Bajar a 3 m" depth="3.0" tolerance="0.2" timeout="90"/>
+        <FollowPath name="Recorrer la red" waypoints="0,0,3; 0,10,3; 1.5,10,3; 1.5,0,3; 3,0,3; 3,10,3" tolerance="0.5" speed="0.3"/>
+        <Surface name="Emerger" timeout="120"/>
+      </Sequence>
+    </ReactiveSequence>
+  </BehaviorTree>
+</root>

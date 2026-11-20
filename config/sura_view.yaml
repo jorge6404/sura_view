@@ -1,0 +1,51 @@
+# Parámetros de sura_view_server. Los comandos son plantillas: {robot}, {address}, {user}.
+/sura_view/sura_view_server:
+  ros__parameters:
+    robot_namespace: bluerov
+    environment: sim            # sim | real (la web lo cambia al elegir robot)
+    robot_address: 127.0.0.1
+    robot_user: pi
+    frame_id: world_ned         # marco de las metas GoToPose / FollowPath (sura_actions)
+
+    # «Lanzar SURA» en simulación: primero el simulador (si hay comando) y luego SURA.
+    # El simulador del BlueROV vive en otro workspace (stonefish_enviromnents); si lo
+    # arrancas a mano, deja sim_command vacío.
+    sim_command: ""
+    sura_command: "ros2 launch sura_bringup sura_bringup.launch.py robot_namespace:={robot}"
+
+    # «Lanzar SURA» en el robot real: SURA corre en Docker en la Raspberry Pi (`sura start`).
+    # Necesita clave SSH sin contraseña hacia {user}@{address}.
+    real_sura_command: >-
+      ssh -o BatchMode=yes {user}@{address}
+      "cd ~/sura_ws_meta && docker compose exec -T main bash -lc
+      'source /opt/ros/humble/setup.bash && source /sura_ws_meta/install/setup.bash &&
+      ros2 launch sura_bringup sura_bringup.launch.py robot_namespace:={robot}'"
+
+    # Calibrar la IMU desde la web: calibration_wizard de sura_imu. {output} es el yaml del
+    # código fuente e {installed} la copia que lee calibration_filter al lanzar SURA (se copia
+    # al acabar, para no tener que recompilar). stdbuf: que las líneas lleguen al momento.
+    imu_calib_command: >-
+      stdbuf -oL -eL "$(ros2 pkg prefix sura_imu)/lib/sura_imu/calibration_wizard"
+      --robot-namespace {robot}
+      --bringup-description "$(ros2 pkg prefix {robot}_description)/share/{robot}_description/config/bringup_description.yaml"
+      --output {output} --skip-report
+      && {{ [ {output} -ef {installed} ] || cp {output} {installed}; }}
+    real_imu_calib_command: >-
+      ssh -o BatchMode=yes {user}@{address}
+      "cd ~/sura_ws_meta && docker compose exec -T main bash -lc
+      'source /opt/ros/humble/setup.bash && source /sura_ws_meta/install/setup.bash && cd /sura_ws_meta &&
+      stdbuf -oL -eL install/sura_imu/lib/sura_imu/calibration_wizard --robot-namespace {robot}
+      --bringup-description install/{robot}_description/share/{robot}_description/config/bringup_description.yaml
+      --skip-report && cp src/sura_imu/config/sura_imu_calibration.yaml install/sura_imu/share/sura_imu/config/'"
+    real_imu_calib_status_command: >-
+      ssh -o BatchMode=yes {user}@{address}
+      "cd ~/sura_ws_meta && docker compose exec -T main
+      cat /sura_ws_meta/install/sura_imu/share/sura_imu/config/sura_imu_calibration.yaml"
+
+    bag_dir: ~/bags
+    bt_dir: ~/.sura_view/bt     # árboles creados o editados desde la web
+
+    # Terminal en el navegador: ejecuta una shell en este ordenador con tu usuario.
+    # Cualquiera que llegue a rosbridge podría usarla; actívala solo en redes de confianza.
+    terminal_enabled: false
+    terminal_cwd: ~

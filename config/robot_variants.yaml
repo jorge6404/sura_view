@@ -1,0 +1,14 @@
+# Versiones de cada robot que ofrece la pantalla de inicio (y la vista 3D).
+# Cada versión es un xacro del paquete *_description. SURA arranca la que diga
+# description.xacro en su bringup_description.yaml; la web la marca como «la que arranca SURA».
+# Un paquete que no esté aquí tiene una sola versión: la de su bringup_description.yaml.
+bluerov_description:
+  - xacro: urdf/bigblue.urdf.xacro
+    label: Sin brazo
+  - xacro: urdf/bluerov_reach.urdf.xacro
+    label: Con brazo Reach
+cirtesub_description:
+  - xacro: urdf/cirtesub.urdf.xacro
+    label: Sin brazos
+  - xacro: urdf/cirtesub_dual_alpha.urdf.xacro
+    label: Dos brazos Alpha

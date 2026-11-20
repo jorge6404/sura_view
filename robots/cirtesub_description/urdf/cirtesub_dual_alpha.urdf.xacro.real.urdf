@@ -1,0 +1,970 @@
+<?xml version="1.0" ?>
+<robot family="underwater" name="cirtesub">
+  <link name="__sura_robot__/base_link" tf_type="base">
+    <visual>
+      <origin rpy="0 3.1416 1.57" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://cirtesub_description/meshes/cirtesub_v2_alpha.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="__sura_robot__/imu_link" tf_type="sensor"/>
+  <joint name="__sura_robot__/imu_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/imu_link"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/pressure_link" tf_type="sensor"/>
+  <joint name="__sura_robot__/pressure_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/pressure_link"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.05"/>
+  </joint>
+  <link name="__sura_robot__/GPS" tf_type="sensor"/>
+  <joint name="__sura_robot__/gps_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/GPS"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.40"/>
+  </joint>
+  <link name="__sura_robot__/dvl_link" tf_type="sensor"/>
+  <joint name="__sura_robot__/dvl_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/dvl_link"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.15"/>
+  </joint>
+  <link name="__sura_robot__/down_camera/camera" tf_type="sensor"/>
+  <joint name="__sura_robot__/down_camera/camera_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/down_camera/camera"/>
+    <origin rpy="0.0 0.0 1.57" xyz="0.0 0.0 0.15"/>
+  </joint>
+  <link name="__sura_robot__/down_camera/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/down_camera/optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/down_camera/camera"/>
+    <child link="__sura_robot__/down_camera/optical_frame"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/front_camera/camera" tf_type="sensor"/>
+  <joint name="__sura_robot__/front_camera/camera_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/front_camera/camera"/>
+    <origin rpy="1.57 0.0 1.57" xyz="0.37 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/stereo_left_camera/camera" tf_type="sensor"/>
+  <joint name="__sura_robot__/stereo_left_camera/camera_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/stereo_left_camera/camera"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.20 -0.06 0.03"/>
+  </joint>
+  <link name="__sura_robot__/stereo_left_camera/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/stereo_left_camera/optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/stereo_left_camera/camera"/>
+    <child link="__sura_robot__/stereo_left_camera/optical_frame"/>
+    <origin rpy="1.5707963267948966 0.0 1.5707963267948966" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/stereo_right_camera/camera" tf_type="sensor"/>
+  <joint name="__sura_robot__/stereo_right_camera/camera_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/stereo_right_camera/camera"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.20 0.06 0.03"/>
+  </joint>
+  <link name="__sura_robot__/stereo_right_camera/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/stereo_right_camera/optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/stereo_right_camera/camera"/>
+    <child link="__sura_robot__/stereo_right_camera/optical_frame"/>
+    <origin rpy="1.5707963267948966 0.0 1.5707963267948966" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/wrist_left_camera/camera" tf_type="sensor"/>
+  <joint name="__sura_robot__/wrist_left_camera/camera_joint" type="fixed">
+    <parent link="__sura_robot__/alpha_left/ee_base_link"/>
+    <child link="__sura_robot__/wrist_left_camera/camera"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.05 0.0 -0.05"/>
+  </joint>
+  <link name="__sura_robot__/wrist_left_camera/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/wrist_left_camera/optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/wrist_left_camera/camera"/>
+    <child link="__sura_robot__/wrist_left_camera/optical_frame"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/wrist_right_camera/camera" tf_type="sensor"/>
+  <joint name="__sura_robot__/wrist_right_camera/camera_joint" type="fixed">
+    <parent link="__sura_robot__/alpha_right/ee_base_link"/>
+    <child link="__sura_robot__/wrist_right_camera/camera"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.05 0.0 -0.05"/>
+  </joint>
+  <link name="__sura_robot__/wrist_right_camera/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/wrist_right_camera/optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/wrist_right_camera/camera"/>
+    <child link="__sura_robot__/wrist_right_camera/optical_frame"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_up_front" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_up_front" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_up_front"/>
+    <origin rpy="1.57 1.57 0" xyz="0.27 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_up_back" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_up_back" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_up_back"/>
+    <origin rpy="1.57 1.57 0.0" xyz="-0.27 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_up_left" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_up_left" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_up_left"/>
+    <origin rpy="1.57 1.57 0" xyz="0.0 -0.3 0.0"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_up_right" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_up_right" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_up_right"/>
+    <origin rpy="1.57 1.57 0" xyz="0.0 0.30 0.0"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_down_backleft" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_down_backleft" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_down_backleft"/>
+    <origin rpy="0 0.0 2.35619" xyz="-0.165 -0.23 0.076"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_down_backright" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_down_backright" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_down_backright"/>
+    <origin rpy="0 0.0 -2.35619" xyz="-0.165 0.23 0.076"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_down_frontleft" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_down_frontleft" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_down_frontleft"/>
+    <origin rpy="0 0.0 0.785398" xyz="0.165 -0.23 0.076"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_down_frontright" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_down_frontright" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_down_frontright"/>
+    <origin rpy="0 0.0 -0.7854" xyz="0.165 0.23 0.076"/>
+  </joint>
+  <material name="__sura_robot__/alpha_left/black">
+    <color rgba="0.3 0.3 0.3 1"/>
+  </material>
+  <link name="__sura_robot__/alpha_left/base_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/m3_inline_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/M3-INLINE.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_left/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.341"/>
+      <origin xyz="-0.055 0 0"/>
+      <inertia ixx="0.0000682" ixy="0" ixz="0" iyy="0.000673" iyz="0" izz="0.000673"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/m2_1_1_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/M2-1-1.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_left/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.194"/>
+      <origin xyz="0 0 0.0165"/>
+      <inertia ixx="0.000037" ixy="0" ixz="0" iyy="0.000037" iyz="0" izz="0.0000388"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/m2_joint_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/M2.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_left/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.429"/>
+      <origin xyz="-0.02 0 -0.0725"/>
+      <inertia ixx="0.0008907" ixy="0" ixz="0" iyy="0.0008907" iyz="0" izz="0.0000858"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/m2_1_2_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/M2-1-3.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_left/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.115"/>
+      <origin xyz="0.02 0 0.0165"/>
+      <inertia ixx="0.0000219" ixy="0" ixz="0" iyy="0.0000219" iyz="0" izz="0.000023"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/m1_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/RS1-100-101-123.stl"/>
+      </geometry>
+      <origin rpy="0 -1.5707 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_left/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.200"/>
+      <origin xyz="0 0 0.05"/>
+      <inertia ixx="0.0001867" ixy="0" ixz="0" iyy="0.0001867" iyz="0" izz="0.00004"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/ee_base_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/push_rod">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <joint name="__sura_robot__/alpha_left/base_joint" type="fixed">
+    <origin rpy="0.0 0.0 0.0" xyz="0.2664 -0.2090 0.0322"/>
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/alpha_left/base_link"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/base_link_joint" type="fixed">
+    <parent link="__sura_robot__/alpha_left/base_link"/>
+    <child link="__sura_robot__/alpha_left/m3_inline_link"/>
+    <origin rpy="0 0 0"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/axis_e" type="revolute">
+    <parent link="__sura_robot__/alpha_left/m3_inline_link"/>
+    <child link="__sura_robot__/alpha_left/m2_1_1_link"/>
+    <origin xyz="0 0 0.014"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="9.0" lower="0.0" upper="6.10" velocity="0.5"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/axis_d" type="revolute">
+    <parent link="__sura_robot__/alpha_left/m2_1_1_link"/>
+    <child link="__sura_robot__/alpha_left/m2_joint_link"/>
+    <origin xyz="-0.02 0 0.033"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="9.0" lower="-3.49" upper="3.49" velocity="0.5"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/axis_c" type="revolute">
+    <parent link="__sura_robot__/alpha_left/m2_joint_link"/>
+    <child link="__sura_robot__/alpha_left/m2_1_2_link"/>
+    <origin rpy="0 0 3.14159" xyz="-0.04 0 -0.1453"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="9.0" lower="0.0" upper="3.22" velocity="0.5"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/axis_b" type="revolute">
+    <parent link="__sura_robot__/alpha_left/m2_1_2_link"/>
+    <child link="__sura_robot__/alpha_left/m1_link"/>
+    <origin rpy="0 0 2.09439" xyz="0.02 0 0.033"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="9.0" lower="0.0" upper="6.10" velocity="0.5"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/ee_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.09975"/>
+    <parent link="__sura_robot__/alpha_left/m1_link"/>
+    <child link="__sura_robot__/alpha_left/ee_base_link"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/axis_a" type="prismatic">
+    <origin rpy="0 0 0" xyz="0 0 0.009"/>
+    <parent link="__sura_robot__/alpha_left/ee_base_link"/>
+    <child link="__sura_robot__/alpha_left/push_rod"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" lower="0" upper="0.015" velocity="10"/>
+  </joint>
+  <material name="__sura_robot__/alpha_left/standard_jaws_black">
+    <color rgba="0.3 0.3 0.3 1"/>
+  </material>
+  <link name="__sura_robot__/alpha_left/standard_jaws_base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/end_effectors/RS1-124.stl"/>
+      </geometry>
+      <material name="__sura_robot__/alpha_left/standard_jaws_black"/>
+    </visual>
+    <inertial>
+      <mass value="0.023"/>
+      <origin xyz="0 0 0.004875"/>
+      <inertia ixx="0.000002422" ixy="0" ixz="0" iyy="0.000002422" iyz="0" izz="0.0000046"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/standard_jaws_rs1_130_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/end_effectors/RS1-130.stl"/>
+      </geometry>
+      <material name="__sura_robot__/alpha_left/standard_jaws_black"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <inertial>
+      <mass value="0.055"/>
+      <origin rpy="0 0 0" xyz="0.0 -0.008 0.045"/>
+      <inertia ixx="0.00004125" ixy="0" ixz="0" iyy="0.000037785" iyz="0" izz="0.000004785"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/standard_jaws_rs1_139_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/end_effectors/RS1-139.stl"/>
+      </geometry>
+      <material name="__sura_robot__/alpha_left/standard_jaws_black"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <inertial>
+      <mass value="0.055"/>
+      <origin rpy="0 0 0" xyz="0.0 0.008 0.045"/>
+      <inertia ixx="0.00004125" ixy="0" ixz="0" iyy="0.000037785" iyz="0" izz="0.000004785"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_left/standard_jaws_tool">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <joint name="__sura_robot__/alpha_left/standard_jaws_base_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="__sura_robot__/alpha_left/ee_base_link"/>
+    <child link="__sura_robot__/alpha_left/standard_jaws_base_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/standard_jaws_rs1_130_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0.0155 0.0069"/>
+    <parent link="__sura_robot__/alpha_left/standard_jaws_base_link"/>
+    <child link="__sura_robot__/alpha_left/standard_jaws_rs1_130_link"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="10" lower="0" upper="0.5" velocity="10"/>
+    <mimic joint="__sura_robot__/alpha_left/axis_a" multiplier="51" offset="0"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/standard_jaws_rs1_139_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 -0.0155 0.0069"/>
+    <parent link="__sura_robot__/alpha_left/standard_jaws_base_link"/>
+    <child link="__sura_robot__/alpha_left/standard_jaws_rs1_139_link"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="10" lower="0" upper="0.5" velocity="10"/>
+    <mimic joint="__sura_robot__/alpha_left/standard_jaws_rs1_130_joint" multiplier="1" offset="0"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_left/standard_jaws_tool_joint" type="fixed">
+    <origin rpy="0 -1.571 0" xyz="0 0 0.04"/>
+    <parent link="__sura_robot__/alpha_left/standard_jaws_base_link"/>
+    <child link="__sura_robot__/alpha_left/standard_jaws_tool"/>
+  </joint>
+  <material name="__sura_robot__/alpha_right/black">
+    <color rgba="0.3 0.3 0.3 1"/>
+  </material>
+  <link name="__sura_robot__/alpha_right/base_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/m3_inline_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/M3-INLINE.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_right/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.341"/>
+      <origin xyz="-0.055 0 0"/>
+      <inertia ixx="0.0000682" ixy="0" ixz="0" iyy="0.000673" iyz="0" izz="0.000673"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/m2_1_1_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/M2-1-1.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_right/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.194"/>
+      <origin xyz="0 0 0.0165"/>
+      <inertia ixx="0.000037" ixy="0" ixz="0" iyy="0.000037" iyz="0" izz="0.0000388"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/m2_joint_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/M2.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_right/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.429"/>
+      <origin xyz="-0.02 0 -0.0725"/>
+      <inertia ixx="0.0008907" ixy="0" ixz="0" iyy="0.0008907" iyz="0" izz="0.0000858"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/m2_1_2_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/M2-1-3.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_right/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.115"/>
+      <origin xyz="0.02 0 0.0165"/>
+      <inertia ixx="0.0000219" ixy="0" ixz="0" iyy="0.0000219" iyz="0" izz="0.000023"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/m1_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/RS1-100-101-123.stl"/>
+      </geometry>
+      <origin rpy="0 -1.5707 0" xyz="0 0 0"/>
+      <material name="__sura_robot__/alpha_right/black"/>
+    </visual>
+    <inertial>
+      <mass value="0.200"/>
+      <origin xyz="0 0 0.05"/>
+      <inertia ixx="0.0001867" ixy="0" ixz="0" iyy="0.0001867" iyz="0" izz="0.00004"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/ee_base_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/push_rod">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <joint name="__sura_robot__/alpha_right/base_joint" type="fixed">
+    <origin rpy="0.0 0.0 0.0" xyz="0.2664 0.2136 0.0322"/>
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/alpha_right/base_link"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/base_link_joint" type="fixed">
+    <parent link="__sura_robot__/alpha_right/base_link"/>
+    <child link="__sura_robot__/alpha_right/m3_inline_link"/>
+    <origin rpy="0 0 0"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/axis_e" type="revolute">
+    <parent link="__sura_robot__/alpha_right/m3_inline_link"/>
+    <child link="__sura_robot__/alpha_right/m2_1_1_link"/>
+    <origin xyz="0 0 0.014"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="9.0" lower="0.0" upper="6.10" velocity="0.5"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/axis_d" type="revolute">
+    <parent link="__sura_robot__/alpha_right/m2_1_1_link"/>
+    <child link="__sura_robot__/alpha_right/m2_joint_link"/>
+    <origin xyz="-0.02 0 0.033"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="9.0" lower="-3.49" upper="3.49" velocity="0.5"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/axis_c" type="revolute">
+    <parent link="__sura_robot__/alpha_right/m2_joint_link"/>
+    <child link="__sura_robot__/alpha_right/m2_1_2_link"/>
+    <origin rpy="0 0 3.14159" xyz="-0.04 0 -0.1453"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="9.0" lower="0.0" upper="3.22" velocity="0.5"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/axis_b" type="revolute">
+    <parent link="__sura_robot__/alpha_right/m2_1_2_link"/>
+    <child link="__sura_robot__/alpha_right/m1_link"/>
+    <origin rpy="0 0 2.09439" xyz="0.02 0 0.033"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="9.0" lower="0.0" upper="6.10" velocity="0.5"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/ee_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.09975"/>
+    <parent link="__sura_robot__/alpha_right/m1_link"/>
+    <child link="__sura_robot__/alpha_right/ee_base_link"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/axis_a" type="prismatic">
+    <origin rpy="0 0 0" xyz="0 0 0.009"/>
+    <parent link="__sura_robot__/alpha_right/ee_base_link"/>
+    <child link="__sura_robot__/alpha_right/push_rod"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" lower="0" upper="0.015" velocity="10"/>
+  </joint>
+  <material name="__sura_robot__/alpha_right/standard_jaws_black">
+    <color rgba="0.3 0.3 0.3 1"/>
+  </material>
+  <link name="__sura_robot__/alpha_right/standard_jaws_base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/end_effectors/RS1-124.stl"/>
+      </geometry>
+      <material name="__sura_robot__/alpha_right/standard_jaws_black"/>
+    </visual>
+    <inertial>
+      <mass value="0.023"/>
+      <origin xyz="0 0 0.004875"/>
+      <inertia ixx="0.000002422" ixy="0" ixz="0" iyy="0.000002422" iyz="0" izz="0.0000046"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/standard_jaws_rs1_130_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/end_effectors/RS1-130.stl"/>
+      </geometry>
+      <material name="__sura_robot__/alpha_right/standard_jaws_black"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <inertial>
+      <mass value="0.055"/>
+      <origin rpy="0 0 0" xyz="0.0 -0.008 0.045"/>
+      <inertia ixx="0.00004125" ixy="0" ixz="0" iyy="0.000037785" iyz="0" izz="0.000004785"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/standard_jaws_rs1_139_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://alpha_description/meshes/end_effectors/RS1-139.stl"/>
+      </geometry>
+      <material name="__sura_robot__/alpha_right/standard_jaws_black"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <inertial>
+      <mass value="0.055"/>
+      <origin rpy="0 0 0" xyz="0.0 0.008 0.045"/>
+      <inertia ixx="0.00004125" ixy="0" ixz="0" iyy="0.000037785" iyz="0" izz="0.000004785"/>
+    </inertial>
+  </link>
+  <link name="__sura_robot__/alpha_right/standard_jaws_tool">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <joint name="__sura_robot__/alpha_right/standard_jaws_base_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="__sura_robot__/alpha_right/ee_base_link"/>
+    <child link="__sura_robot__/alpha_right/standard_jaws_base_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/standard_jaws_rs1_130_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0.0155 0.0069"/>
+    <parent link="__sura_robot__/alpha_right/standard_jaws_base_link"/>
+    <child link="__sura_robot__/alpha_right/standard_jaws_rs1_130_link"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="10" lower="0" upper="0.5" velocity="10"/>
+    <mimic joint="__sura_robot__/alpha_right/axis_a" multiplier="51" offset="0"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/standard_jaws_rs1_139_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 -0.0155 0.0069"/>
+    <parent link="__sura_robot__/alpha_right/standard_jaws_base_link"/>
+    <child link="__sura_robot__/alpha_right/standard_jaws_rs1_139_link"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="10" lower="0" upper="0.5" velocity="10"/>
+    <mimic joint="__sura_robot__/alpha_right/standard_jaws_rs1_130_joint" multiplier="1" offset="0"/>
+  </joint>
+  <joint name="__sura_robot__/alpha_right/standard_jaws_tool_joint" type="fixed">
+    <origin rpy="0 -1.571 0" xyz="0 0 0.04"/>
+    <parent link="__sura_robot__/alpha_right/standard_jaws_base_link"/>
+    <child link="__sura_robot__/alpha_right/standard_jaws_tool"/>
+  </joint>
+  <ros2_control name="__sura_robot___thrusters" type="system">
+    <hardware>
+      <plugin>sura_hardware_interface/ThrustersSystem</plugin>
+      <param name="environment">real</param>
+    </hardware>
+    <joint name="__sura_robot__/Thruster_up_front">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/cirtesub/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">0</param>
+      <param name="controller">thruster_test_controller</param>
+      <param name="controller">body_force</param>
+      <param name="controller">mpc_4dof</param>
+      <param name="controller">state_observer</param>
+      <param name="controller">body_velocity</param>
+      <param name="controller">position_hold</param>
+      <param name="controller">stabilize</param>
+      <param name="controller">depth_hold</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_up_back">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/cirtesub/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">1</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_up_left">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/cirtesub/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">2</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_up_right">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/cirtesub/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">3</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_down_backleft">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/cirtesub/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">4</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_down_backright">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/cirtesub/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">5</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_down_frontleft">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/cirtesub/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">6</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_down_frontright">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/cirtesub/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">7</param>
+    </joint>
+  </ros2_control>
+  <ros2_control name="__sura_robot___sensors" type="system">
+    <hardware>
+      <plugin>sura_hardware_interface/SensorsSystem</plugin>
+      <param name="environment">real</param>
+      <param name="robot_namespace">__sura_robot__</param>
+    </hardware>
+    <sensor name="imu_sensor">
+      <param name="interface">sura_hardware_interface/ImuInterface</param>
+      <param name="broadcaster">imu_broadcaster</param>
+      <param name="read_rate_hz">200.0</param>
+      <param name="frame_id">__sura_robot__/imu_link</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/imu</param>
+      <param name="msg_type">sensor_msgs/msg/Imu</param>
+      <state_interface name="orientation.x"/>
+      <state_interface name="orientation.y"/>
+      <state_interface name="orientation.z"/>
+      <state_interface name="orientation.w"/>
+      <state_interface name="angular_velocity.x"/>
+      <state_interface name="angular_velocity.y"/>
+      <state_interface name="angular_velocity.z"/>
+      <state_interface name="linear_acceleration.x"/>
+      <state_interface name="linear_acceleration.y"/>
+      <state_interface name="linear_acceleration.z"/>
+      <state_interface name="sample_time.sec"/>
+      <state_interface name="sample_time.nanosec"/>
+    </sensor>
+    <sensor name="magnetometer_sensor">
+      <param name="interface">sura_hardware_interface/MagnetometerInterface</param>
+      <param name="broadcaster">magnetometer_broadcaster</param>
+      <param name="read_rate_hz">200.0</param>
+      <param name="frame_id">__sura_robot__/imu_link</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/magnetometer</param>
+      <param name="msg_type">sensor_msgs/msg/MagneticField</param>
+      <state_interface name="magnetic_field.x"/>
+      <state_interface name="magnetic_field.y"/>
+      <state_interface name="magnetic_field.z"/>
+      <state_interface name="sample_time.sec"/>
+      <state_interface name="sample_time.nanosec"/>
+    </sensor>
+    <sensor name="pressure_sensor">
+      <param name="interface">sura_hardware_interface/PressureInterface</param>
+      <param name="broadcaster">pressure_broadcaster</param>
+      <param name="read_rate_hz">50.0</param>
+      <param name="frame_id">__sura_robot__/pressure_link</param>
+      <param name="pressure_offset_pa">101325.0</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/pressure</param>
+      <param name="msg_type">sensor_msgs/msg/FluidPressure</param>
+      <state_interface name="fluid_pressure"/>
+    </sensor>
+    <sensor name="battery_sensor">
+      <param name="interface">sura_hardware_interface/BatteryInterface</param>
+      <param name="broadcaster">battery_broadcaster</param>
+      <param name="read_rate_hz">2.0</param>
+      <param name="frame_id">__sura_robot__/base_link</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/battery</param>
+      <state_interface name="voltage"/>
+      <state_interface name="current"/>
+      <state_interface name="present"/>
+    </sensor>
+    <sensor name="dvl_sensor">
+      <param name="interface">sura_hardware_interface/DvlInterface</param>
+      <param name="broadcaster">dvl75_velocity_broadcaster</param>
+      <param name="broadcaster">dvl75_altitude_broadcaster</param>
+      <param name="broadcaster">dvl75_gps_broadcaster</param>
+      <param name="read_rate_hz">20.0</param>
+      <param name="frame_id">__sura_robot__/dvl_link</param>
+      <param name="dvl_min_confidence">50.0</param>
+      <param name="dvl_timeout_s">1.0</param>
+      <param name="sim_dvl_confidence">100.0</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/dvl/twist</param>
+      <param name="stonefish_altitude_topic">/__sura_robot__/stonefish/sensors/dvl/altitude</param>
+      <param name="stonefish_gps_topic">/__sura_robot__/stonefish/sensors/gps</param>
+      <param name="msg_type">geometry_msgs/msg/TwistStamped</param>
+      <state_interface name="linear_velocity.x"/>
+      <state_interface name="linear_velocity.y"/>
+      <state_interface name="linear_velocity.z"/>
+      <state_interface name="angular_velocity.x"/>
+      <state_interface name="angular_velocity.y"/>
+      <state_interface name="angular_velocity.z"/>
+      <state_interface name="distance_z"/>
+      <state_interface name="confidence"/>
+      <state_interface name="gps.latitude"/>
+      <state_interface name="gps.longitude"/>
+      <state_interface name="gps.altitude"/>
+      <state_interface name="gps.valid"/>
+    </sensor>
+  </ros2_control>
+  <ros2_control name="__sura_robot__/alpha_left" type="system">
+    <hardware>
+      <plugin>alpha_hardware/alpha_stonefish_hardware</plugin>
+      <param name="desired_joint_states_topic">/cirtesub/alpha/desired_joint_states</param>
+      <param name="joint_states_topic">/cirtesub/stonefish/alpha/joint_states</param>
+      <param name="normalized_joint_states_topic">/cirtesub/alpha/joint_states</param>
+    </hardware>
+    <joint name="__sura_robot__/alpha_left/axis_a">
+      <command_interface name="position">
+        <param name="min">0</param>
+        <param name="max">0.015</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-2.5</param>
+        <param name="max">2.5</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="__sura_robot__/alpha_left/axis_b">
+      <command_interface name="position">
+        <param name="min">0.0</param>
+        <param name="max">6.10</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-1.0</param>
+        <param name="max">1.0</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="__sura_robot__/alpha_left/axis_c">
+      <command_interface name="position">
+        <param name="min">0</param>
+        <param name="max">3.22</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-1.0</param>
+        <param name="max">1.0</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="__sura_robot__/alpha_left/axis_d">
+      <command_interface name="position">
+        <param name="min">0</param>
+        <param name="max">3.49</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-1.0</param>
+        <param name="max">1.0</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.5746</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="__sura_robot__/alpha_left/axis_e">
+      <command_interface name="position">
+        <param name="min">0</param>
+        <param name="max">6.10</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-0.5</param>
+        <param name="max">0.5</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+  </ros2_control>
+  <ros2_control name="__sura_robot__/alpha_right" type="system">
+    <hardware>
+      <plugin>alpha_hardware/alpha_stonefish_hardware</plugin>
+      <param name="desired_joint_states_topic">/cirtesub/alpha/desired_joint_states</param>
+      <param name="joint_states_topic">/cirtesub/stonefish/alpha/joint_states</param>
+      <param name="normalized_joint_states_topic">/cirtesub/alpha/joint_states</param>
+    </hardware>
+    <joint name="__sura_robot__/alpha_right/axis_a">
+      <command_interface name="position">
+        <param name="min">0</param>
+        <param name="max">0.015</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-2.5</param>
+        <param name="max">2.5</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="__sura_robot__/alpha_right/axis_b">
+      <command_interface name="position">
+        <param name="min">0.0</param>
+        <param name="max">6.10</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-1.0</param>
+        <param name="max">1.0</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="__sura_robot__/alpha_right/axis_c">
+      <command_interface name="position">
+        <param name="min">0</param>
+        <param name="max">3.22</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-1.0</param>
+        <param name="max">1.0</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="__sura_robot__/alpha_right/axis_d">
+      <command_interface name="position">
+        <param name="min">0</param>
+        <param name="max">3.49</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-1.0</param>
+        <param name="max">1.0</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.5746</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="__sura_robot__/alpha_right/axis_e">
+      <command_interface name="position">
+        <param name="min">0</param>
+        <param name="max">6.10</param>
+      </command_interface>
+      <command_interface name="velocity">
+        <param name="min">-0.5</param>
+        <param name="max">0.5</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0</param>
+      </state_interface>
+      <state_interface name="velocity">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+  </ros2_control>
+</robot>

@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>sura_view · tests</title>
+<script type="importmap">{"imports":{"node:test":"./shim/test.js","node:assert/strict":"./shim/assert.js","three":"../vendor/three.module.min.js"}}</script>
+<pre id="out">Ejecutando…</pre>
+<script type="module">
+  import { runAll, results } from './shim/test.js';
+  const files = ['util', 'mission', 'joy', 'rosbridge', 'cloud', 'plot', 'controlmodes', 'viz', 'sites', 'imucal', 'dashgrid', 'dashinstruments', 'dashwidgets', 'term'];
+  const out = document.getElementById('out');
+  out.textContent = '';
+  let broken = 0;
+  for (const f of files) {
+    out.textContent += `# ${f}\n`;
+    try { await import(`./${f}.test.mjs`); } catch (e) { broken++; out.textContent += `not ok - no se pudo importar: ${e.message}\n`; continue; }
+    await runAll((l) => { out.textContent += l + '\n'; });
+  }
+  const bad = results.filter((r) => !r[1]).length + broken;
+  out.textContent += `\n${results.filter((r) => r[1]).length} pasan, ${bad} fallan`;
+  document.title = bad ? 'FAIL' : 'PASS';
+  // run_headless.py: la salida vuelve por POST
+  if (new URLSearchParams(location.search).has('report')) fetch('/report', { method: 'POST', body: out.textContent });
+</script>

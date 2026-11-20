@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURA view</title>
+<link rel="icon" href="img/sura_logo.png" type="image/png">
+<link rel="stylesheet" href="vendor/xterm/xterm.css">
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+</head>
+<body>
+<!-- refracción del liquid glass -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="n"/>
+    <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
+    <feDisplacementMap in="SourceGraphic" in2="nb" scale="22" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo-tile"><img src="img/sura_logo.png" alt="SURA"></span>
+    <span class="sura-word">view</span>
+  </div>
+  <button class="robotsel" data-go="setup" title="Cambiar de robot">
+    <i data-lucide="ship"></i>
+    <div><b id="robotName">Sin robot</b><small id="robotType">Elige uno</small></div>
+    <i data-lucide="chevrons-up-down"></i>
+  </button>
+
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button class="tab" role="tab" data-view="pilot"><i data-lucide="gamepad-2"></i>Pilotar</button>
+    <button class="tab" role="tab" data-view="ctrl"><i data-lucide="sliders-horizontal"></i>SURA Controllers</button>
+    <button class="tab" role="tab" data-view="mission"><i data-lucide="map"></i>Misión</button>
+    <button class="tab" role="tab" data-view="3d"><i data-lucide="box"></i>Vista 3D</button>
+    <button class="tab" role="tab" data-view="plots"><i data-lucide="chart-line"></i>Gráficas</button>
+    <button class="tab" role="tab" data-view="diag"><i data-lucide="stethoscope"></i>Diagnóstico</button>
+    <span class="tab-ink" id="tabInk"></span>
+  </nav>
+
+  <div class="right">
+    <div class="pills" role="group" aria-label="Estado del sistema">
+      <span class="pill" title="Conexión con rosbridge"><span class="dot off" id="dotLink"></span>Enlace<small id="txtLink">—</small></span>
+      <button class="pill" data-go="diag" title="Arquitectura SURA"><span class="dot off" id="dotSura"></span>SURA<small id="txtSura">—</small></button>
+      <button class="pill" data-go="diag" title="Diagnóstico del vehículo"><span class="dot off" id="dotVeh"></span>Vehículo<small id="txtVeh">—</small></button>
+    </div>
+    <button class="btn small" id="pingBtn" title="Comprobar que el robot responde"><i data-lucide="radio"></i><span id="pingTxt">Ping</span></button>
+    <span class="chip bat" id="chipBat" title="Batería"><i data-lucide="battery-medium"></i><span id="chipBatTxt">—</span></span>
+    <span class="chip sim" id="chipEnv"><i data-lucide="flask-conical"></i><span id="chipEnvTxt">SIM</span></span>
+    <button class="iconbtn" id="themeBtn" title="Modo sol (alto contraste)" aria-label="Cambiar a modo sol"><i data-lucide="sun"></i></button>
+    <button class="iconbtn" id="moreBtn" title="Más herramientas" aria-label="Más herramientas" aria-expanded="false"><i data-lucide="menu"></i></button>
+    <button class="btn danger" id="disarmTop" title="Parada: control_manager → EMERGENCY_STOP"><i data-lucide="octagon-x"></i>Desarmar</button>
+  </div>
+
+  <div class="menu" id="menu" role="menu">
+    <span class="label">Operación</span>
+    <button role="menuitem" data-go="telem"><i data-lucide="activity"></i><div>Gráficas de telemetría<small>Profundidad, batería, actitud, velocidad</small></div></button>
+    <button role="menuitem" id="menuImu"><i data-lucide="compass"></i><div>Calibrar la IMU<small>Giróscopo, magnetómetro y brújula</small></div></button>
+    <button role="menuitem" id="menuChecks"><i data-lucide="list-checks"></i><div>Comprobaciones antes de inmersión<small>Fugas, batería, sensores, cámara</small></div></button>
+    <button role="menuitem" id="menuBag"><i data-lucide="disc"></i><div id="menuBagTxt">Grabar rosbag<small>Todos los topics</small></div></button>
+    <hr>
+    <span class="label">Desarrollador</span>
+    <button role="menuitem" data-go="dev"><i data-lucide="terminal"></i><div>Terminal, topics y logs<small>sura shell · ros2 topic · nodos</small></div></button>
+    <button role="menuitem" data-go="bt"><i data-lucide="git-fork"></i><div>Behaviour trees<small>Editar y ejecutar árboles</small></div></button>
+    <button role="menuitem" id="menuProfile"><i data-lucide="file-cog"></i><div>Configuración del robot<small>bringup_description.yaml</small></div></button>
+  </div>
+</header>
+
+<div class="banner" id="banner" hidden></div>
+
+<!-- ================= ROBOT (inicio) ================= -->
+<section class="view" id="v-setup" role="tabpanel" aria-label="Robot">
+  <div class="setup">
+    <header class="setup-head">
+      <img class="setup-logo" src="img/sura_logo.png" alt="SURA">
+      <div><h1>¿Con qué robot trabajas hoy?</h1>
+      <p class="lead">Elige uno que ya usaste o configura otro en tres pasos.</p></div>
+    </header>
+
+    <aside class="recent">
+      <h2>Recientes</h2>
+      <div id="recentList"><p class="muted">Todavía no has usado ningún robot.</p></div>
+      <div class="or">o bien</div>
+      <button class="btn" style="width:100%" id="newRobot"><i data-lucide="plus"></i>Configurar otro robot</button>
+    </aside>
+
+    <form class="wizard" id="wizard" onsubmit="return false" novalidate>
+      <ol class="wsteps" id="wsteps">
+        <li class="on"><i></i>1 · Robot</li>
+        <li><i></i>2 · Dónde está</li>
+        <li><i></i>3 · Componentes</li>
+      </ol>
+
+      <div class="wpage on" data-page="0">
+        <h2>¿Qué robot es?</h2>
+        <p class="muted" id="robotsHint">Buscando robots instalados…</p>
+        <div class="rpick">
+          <div class="rpick-side">
+            <div class="rpick-list" role="radiogroup" aria-label="Robot" id="robotTypes"></div>
+            <div class="rvariants" id="robotVariants" hidden>
+              <span class="label">Versión</span>
+              <div class="variant-seg" id="variantSeg" role="radiogroup" aria-label="Versión del robot"></div>
+              <p class="hint-sm" id="variantNote" hidden></p>
+            </div>
+          </div>
+          <div class="rpick-view" id="robotPreview"><div class="rpick-info" id="robotInfo"></div><p class="rpick-msg" id="robotMsg">Elige un robot</p><small class="rpick-help">Arrastra para girarlo · doble clic para que vuelva a girar solo</small></div>
+        </div>
+      </div>
+
+      <div class="wpage" data-page="1">
+        <h2>¿Dónde está el robot?</h2>
+        <div class="envsel">
+          <label class="env"><input type="radio" name="env" value="sim" checked><div><b>Simulación</b><small>Stonefish en este ordenador.</small></div></label>
+          <label class="env"><input type="radio" name="env" value="real"><div><b>Robot real</b><small>Encendido con <code>sura start</code> en la Raspberry Pi.</small></div></label>
+        </div>
+        <div class="grid2">
+          <div class="field" id="fIp"><label for="ip">Dirección del robot</label><input id="ip" value="127.0.0.1" autocomplete="off"><span class="help">Vale «192.168.2.2», «192.168.2.2:9090» o «bluerov.local».</span><span class="err">No parece una dirección. Ejemplo: 192.168.2.2</span></div>
+          <div class="field"><label>Red ROS</label><div class="readonly" id="rosNet">—</div><span class="help">ROS_DOMAIN_ID y DDS los fija el lanzamiento de sura_view.</span></div>
+        </div>
+      </div>
+
+      <div class="wpage" data-page="2">
+        <h2>¿Qué lleva montado?</h2>
+        <p class="muted" style="margin-top:-8px">Leído de su bringup_description.yaml. Se cambia en ese fichero.</p>
+        <div class="toggles" id="components"></div>
+      </div>
+
+      <div class="wnav">
+        <button class="btn" id="wBack" type="button" disabled><i data-lucide="arrow-left"></i>Atrás</button>
+        <button class="btn primary" id="wNext" type="button">Siguiente<i data-lucide="arrow-right"></i></button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ================= PILOTAR ================= -->
+<section class="view" id="v-pilot" role="tabpanel" aria-label="Pilotar">
+  <div class="lcol">
+    <div class="panel next" id="nextBox">
+      <div class="step" id="stepBar" role="img" aria-label="Paso 1 de 4"><i></i><i></i><i></i><i></i></div>
+      <h3 id="nextTitle">Conecta con un robot</h3>
+      <p id="nextText">Elige el robot con el que vas a trabajar.</p>
+      <button class="btn big primary" id="nextBtn">Elegir robot</button>
+      <div class="after" id="nextAfter"></div>
+    </div>
+    <div class="panel">
+      <h2>Modo de control<span class="end synthetic" id="modeNow">—</span></h2>
+      <div class="modes" role="group" aria-label="Modo de control" id="modes"></div>
+      <form class="depthset" id="depthSet" hidden>
+        <label for="depthIn">Mantener a</label>
+        <input id="depthIn" inputmode="decimal" autocomplete="off" placeholder="—"><span>m</span>
+        <button class="btn small" type="submit">Fijar</button>
+      </form>
+      <button class="btn small" id="surfaceBtn"><i data-lucide="arrow-up-to-line"></i>Emerger</button>
+    </div>
+    <div class="panel">
+      <h2>Mando y autonomía</h2>
+      <div class="pad" id="padBox"><i data-lucide="gamepad-2"></i><span id="padTxt">Conecta un mando y pulsa un botón</span><span class="dot off" id="padDot" style="margin-left:auto"></span></div>
+      <div class="auto" id="autoBox"><span class="dot off" id="autoDot"></span><span id="autoTxt">Control: —</span></div>
+      <button class="btn small" id="virtualBtn" aria-pressed="false" hidden><i data-lucide="hand"></i>Ceder control al robot (simulación)</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="cam" id="cam">
+      <div class="layer" id="camLayer"><img id="camImg" alt="Cámara del robot"><canvas id="camCanvas" hidden></canvas>
+        <div class="camempty" id="camEmpty"><i data-lucide="video-off"></i><b>Sin imagen</b><span id="camEmptyTxt">Esperando a la cámara…</span></div>
+      </div>
+      <div class="flash" id="flash"></div>
+      <div class="draft" id="draft" aria-label="Regla de profundidad"></div>
+      <div class="horizon" id="horizon"></div>
+      <div class="reticle"></div>
+      <div class="cam-top">
+        <div class="seg viewseg" role="group" aria-label="Vista de Pilotar"><button data-v="classic" aria-pressed="true">Clásica</button><button data-v="dash" aria-pressed="false"><i data-lucide="layout-dashboard"></i>Mi panel</button></div>
+        <div class="seg" role="group" aria-label="Cámara" id="camSel"></div>
+        <span class="camfps" id="camFps"></span>
+      </div>
+      <div class="cam-bot">
+        <button class="ovbtn" id="photoBtn"><i data-lucide="camera"></i>Foto</button>
+        <button class="ovbtn rec" id="recBtn" aria-pressed="false"><i data-lucide="circle-dot"></i><span>Grabar</span></button>
+      </div>
+      <button class="pip" id="pip" title="Cambiar cámara y mapa" aria-label="Mostrar el mapa en grande">
+        <div class="layer" id="pipLayer"><svg id="miniMap" viewBox="-20 -20 40 40" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg></div>
+        <span class="tag" id="pipTag"><i data-lucide="map"></i>Mapa</span>
+      </button>
+    </div>
+    <div class="strip">
+      <div><span class="label">Profundidad</span><b id="sDepth">—</b><small id="sDepthSub">sin datos</small></div>
+      <div><span class="label">Rumbo</span><b id="sHead">—</b><small id="sHeadSub"></small></div>
+      <div><span class="label">Velocidad</span><b id="sSpeed">—</b><small>avance</small></div>
+      <div><span class="label">Altitud al fondo</span><b id="sAlt">—</b><small>DVL</small></div>
+    </div>
+  </div>
+
+  <aside class="rcol">
+    <div class="panel battery">
+      <h2><i data-lucide="battery-medium"></i>Batería<span class="end synthetic" id="batAge"></span></h2>
+      <div class="pct num" id="batPct">—</div>
+      <div class="cells" id="batCells" aria-hidden="true"></div>
+      <div class="meta"><span id="batVolt">— V</span><span id="batCur">— A</span></div>
+      <svg class="hist" id="batHist" viewBox="0 0 280 48" preserveAspectRatio="none" aria-label="Historial de tensión"></svg>
+    </div>
+    <div class="panel">
+      <h2><i data-lucide="compass"></i>Rumbo y actitud</h2>
+      <svg class="compass" viewBox="0 0 240 240" aria-label="Brújula">
+        <defs><radialGradient id="dial" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="currentColor" stop-opacity=".10"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs>
+        <circle cx="120" cy="120" r="110" fill="url(#dial)" stroke="currentColor" stroke-opacity=".25" stroke-width="2"/>
+        <g id="rose" font-family="Barlow Condensed" font-weight="700" font-size="20" fill="currentColor" text-anchor="middle">
+          <g stroke="currentColor" stroke-width="2" id="ticks"></g>
+          <text x="120" y="44" fill="#e8b931">N</text><text x="198" y="127">E</text><text x="120" y="210">S</text><text x="42" y="127">O</text>
+        </g>
+        <path d="M120 4 l9 16 h-18z" fill="currentColor"/>
+        <text x="120" y="133" text-anchor="middle" font-family="Barlow Condensed" font-weight="700" font-size="42" fill="currentColor" id="headTxt">—</text>
+      </svg>
+      <div class="kv" style="margin-top:12px"><span>Cabeceo</span><b id="kPitch">—</b><span>Alabeo</span><b id="kRoll">—</b></div>
+    </div>
+    <div class="panel">
+      <h2><i data-lucide="gauge"></i>Barómetro y seguridad</h2>
+      <div class="kv"><span>Presión</span><b id="kPress">—</b><span>Fugas</span><b id="kLeak">—</b><span>Watchdog</span><b id="kWd">—</b></div>
+    </div>
+  </aside>
+
+  <!-- «Mi panel»: cuadrícula libre de widgets (dashboard.js) -->
+  <div class="dash-root" id="dashRoot">
+    <div class="dash-bar">
+      <div class="seg light viewseg" role="group" aria-label="Vista de Pilotar"><button data-v="classic" aria-pressed="false">Clásica</button><button data-v="dash" aria-pressed="true"><i data-lucide="layout-dashboard"></i>Mi panel</button></div>
+      <button class="dash-name" id="dashPanels" aria-haspopup="menu" title="Cambiar de panel, duplicar, exportar…"><span id="dashName">Mi panel</span><i data-lucide="chevron-down"></i></button>
+      <span class="dash-hint">Arrastra por la cabecera · la esquina cambia el tamaño · con teclado: flechas y Mayús+flechas</span>
+      <span class="dash-sp"></span>
+      <button class="btn small" id="dashTemplates"><i data-lucide="layout-template"></i>Plantillas</button>
+      <button class="btn small" id="dashEdit"><i data-lucide="layout-dashboard"></i>Editar panel</button>
+      <input type="file" id="dashFile" accept=".json,application/json" hidden>
+    </div>
+    <div class="dash-body">
+      <div class="dash-grid" id="dashGrid" aria-label="Widgets del panel">
+        <div class="dash-space" id="dashSpace"></div>
+        <div class="dash-ghost" id="dashGhost" hidden></div>
+        <div class="dash-empty" id="dashEmpty" hidden></div>
+      </div>
+      <aside class="dash-catalog panel" id="dashCatalog" hidden aria-label="Catálogo de widgets">
+        <h2><i data-lucide="plus"></i>Añadir widgets</h2>
+        <p class="dash-cat-help">Arrástralos al panel o púlsalos para ponerlos en el primer hueco.</p>
+        <div id="dashCatalogList"></div>
+      </aside>
+    </div>
+    <div class="menu dash-menu" id="dashMenu" role="menu"></div>
+  </div>
+</section>
+
+<!-- ================= SURA CONTROLLERS ================= -->
+<section class="view" id="v-ctrl" role="tabpanel" aria-label="SURA Controllers">
+  <div class="ctl-mainwrap">
+    <div class="ctl-head">
+      <div><h1>SURA Controllers</h1><p class="muted">Controladores de ros2_control del robot. Los cambios van por el árbitro y solo se marcan cuando el robot los confirma; el mando físico puede cambiarlos después.</p></div>
+      <span class="chip" id="ctlSummary">sin datos</span>
+    </div>
+    <div class="ctl-grid" id="ctlMain"></div>
+  </div>
+  <div class="ctl-side">
+    <div class="panel">
+      <h2>Modo del mando<span class="end synthetic" id="ctlModeNow">—</span></h2>
+      <div class="ctl-modes" id="ctlModes"></div>
+    </div>
+    <div class="panel ctl-scroll">
+      <h2>Sensores (broadcasters)<span class="end synthetic" id="ctlSensCount"></span></h2>
+      <div id="ctlSensors"></div>
+    </div>
+    <div class="panel">
+      <h2>Hardware<span class="end synthetic">list_hardware_components</span></h2>
+      <div id="ctlHw"><p class="muted">Sin datos.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MISIÓN ================= -->
+<section class="view" id="v-mission" role="tabpanel" aria-label="Misión">
+  <div class="dock">
+    <section>
+      <h2>Lugar</h2>
+      <div class="seg site-seg" id="siteSel" role="radiogroup" aria-label="Mapa del lugar"></div>
+      <div id="customMap" hidden>
+        <div class="filebtns">
+          <button class="btn small" id="cmLoad"><i data-lucide="image-up"></i>Cargar imagen</button>
+          <button class="btn small ghost" id="cmDrop" title="Quitar el mapa propio"><i data-lucide="trash-2"></i></button>
+          <input type="file" id="cmFile" accept="image/*" hidden>
+        </div>
+        <div class="cm-steps" id="cmSteps">
+          <button class="btn small" data-tool="calib"><i data-lucide="ruler"></i>1 · Escala: dos puntos</button>
+          <button class="btn small" data-tool="anchor"><i data-lucide="crosshair"></i>2 · Dónde está el robot</button>
+          <label class="cm-rot">3 · Giro <input type="range" id="cmRot" min="-180" max="180" step="1" value="0"><span id="cmRotTxt">0°</span></label>
+        </div>
+        <p class="hint-sm" id="cmInfo">Carga un plano o una foto aérea y colócalo en tres pasos.</p>
+      </div>
+      <p class="hint-sm" id="siteHint"></p>
+    </section>
+    <section>
+      <h2>Capas</h2>
+      <ul class="layers" id="layers">
+        <li><input type="checkbox" data-layer="mission" checked id="lyMission"><label for="lyMission"><span class="sw" style="background:#eef0f1;box-shadow:inset 0 0 0 1px #14181c"></span><b>Misión</b></label></li>
+        <li><input type="checkbox" data-layer="trail" checked id="lyTrail"><label for="lyTrail"><span class="sw" style="background:var(--ok)"></span>Rastro del robot</label></li>
+        <li><input type="checkbox" data-layer="origin" checked id="lyOrigin"><label for="lyOrigin"><i data-lucide="asterisk"></i>Origen NED</label></li>
+        <li><input type="checkbox" data-layer="cage" checked id="lyCage"><label for="lyCage"><i data-lucide="square-dashed"></i>Jaula virtual</label></li>
+        <li><input type="checkbox" data-layer="grid" checked id="lyGrid"><label for="lyGrid"><i data-lucide="grid-3x3"></i>Cuadrícula</label></li>
+        <li><input type="checkbox" data-layer="sat" id="lySat"><label for="lySat"><i data-lucide="globe"></i>Satélite (Esri)</label></li>
+      </ul>
+      <p class="hint-sm" id="satHint">El satélite necesita internet y el datum del robot.</p>
+    </section>
+    <section>
+      <h2>Seguimiento</h2>
+      <div id="tracks"></div>
+    </section>
+    <section>
+      <h2>Archivo</h2>
+      <div class="filebtns">
+        <button class="btn small" id="mNew"><i data-lucide="file-plus"></i>Nueva</button>
+        <button class="btn small" id="mOpen"><i data-lucide="folder-open"></i>Abrir</button>
+        <button class="btn small" id="mSave"><i data-lucide="download"></i>Guardar</button>
+        <input type="file" id="mFile" accept=".json,application/json" hidden>
+      </div>
+    </section>
+  </div>
+
+  <div class="mapzone">
+    <div class="mapbar" role="toolbar" aria-label="Herramientas de misión">
+      <button class="tool" data-tool="add" aria-pressed="true"><i data-lucide="map-pin-plus"></i>Añadir waypoint</button>
+      <button class="tool" data-tool="move" aria-pressed="false"><i data-lucide="move"></i>Mover</button>
+      <span class="sep"></span>
+      <button class="tool" data-tool="goto" aria-pressed="false"><i data-lucide="navigation"></i>Ir a…</button>
+      <button class="tool" id="holdBtn"><i data-lucide="anchor"></i>Mantener posición</button>
+      <button class="tool" data-tool="cage" aria-pressed="false"><i data-lucide="square-dashed"></i>Jaula virtual</button>
+      <span class="sep"></span>
+      <button class="tool" data-tool="pose" aria-pressed="false" title="Pose estimada para la localización (set_pose del EKF)"><i data-lucide="locate"></i>Fijar pose del robot</button>
+    </div>
+    <div class="map" id="map">
+      <svg id="mapsvg" aria-label="Mapa de la misión"></svg>
+      <div class="hint" id="mapHint">Haz clic en el mapa para añadir un waypoint</div>
+      <div class="zoom"><button aria-label="Acercar" id="zIn"><i data-lucide="plus"></i></button><button aria-label="Alejar" id="zOut"><i data-lucide="minus"></i></button><button aria-label="Centrar en el robot" id="zRobot"><i data-lucide="locate-fixed"></i></button></div>
+      <div class="scalebar" id="scalebar"><i></i><span>10 m</span></div>
+      <div class="runbar">
+        <div class="state"><b id="runTitle">Sin waypoints</b><small id="runSub">Añade puntos en el mapa</small><div class="progress"><i id="runProg"></i></div></div>
+        <button class="btn go" id="runBtn" disabled><i data-lucide="play"></i>Ejecutar</button>
+        <button class="btn" id="pauseBtn" disabled><i data-lucide="pause"></i>Pausar</button>
+        <button class="btn danger" id="abortBtn" disabled><i data-lucide="arrow-up-to-line"></i>Abortar y emerger</button>
+      </div>
+    </div>
+    <div class="statusbar"><span id="coord">—</span><span id="scaleTxt"></span><span class="map-attr" id="mapAttr" hidden>Imágenes: Esri, Maxar, Earthstar Geographics</span><span>world_ned · metros</span></div>
+  </div>
+
+  <div class="dock r">
+    <section>
+      <h2>Información de la misión</h2>
+      <div class="minfo"><span>Waypoints</span><b id="mWp">0</b><span>Distancia total</span><b id="mDist">0 m</b><span>Tiempo estimado</span><b id="mTime">—</b></div>
+    </section>
+    <section id="wpEditor">
+      <h2>Editor de waypoint<button class="btn small ghost end" id="wpDel" title="Borrar waypoint"><i data-lucide="trash-2"></i></button></h2>
+      <div class="wpnav"><button class="btn icon" id="wpPrev" aria-label="Waypoint anterior"><i data-lucide="chevron-left"></i></button><b id="wpLabel">—</b><button class="btn icon" id="wpNext" aria-label="Waypoint siguiente"><i data-lucide="chevron-right"></i></button></div>
+      <div class="form2">
+        <div class="field"><label for="wx">Norte (m)</label><input id="wx" data-k="x"><span class="err">Escribe un número</span></div>
+        <div class="field"><label for="wy">Este (m)</label><input id="wy" data-k="y"><span class="err">Escribe un número</span></div>
+        <div class="field"><label for="wz">Profundidad (m)</label><input id="wz" data-k="z"><span class="err">Escribe un número</span></div>
+        <div class="field"><label for="ws">Velocidad (m/s)</label><input id="ws" data-k="speed"><span class="err">Escribe un número</span></div>
+      </div>
+    </section>
+    <section>
+      <h2>Acciones rápidas</h2>
+      <div class="quick">
+        <div class="field"><label for="qDepth">Profundidad (m)</label><input id="qDepth" value="2"></div>
+        <button class="btn" id="qDepthBtn"><i data-lucide="arrow-down-to-line"></i>Ir a profundidad</button>
+        <button class="btn" id="qSurface"><i data-lucide="arrow-up-to-line"></i>Emerger</button>
+      </div>
+    </section>
+    <section>
+      <h2>Plantillas</h2>
+      <div class="templates">
+        <button data-tpl="lawn"><svg viewBox="0 0 34 26"><path d="M3 4h28v6H3v6h28v6H3" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Cortacésped</button>
+        <button data-tpl="poly"><svg viewBox="0 0 34 26"><path d="M17 2l14 9-5 13H8L3 11z" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Polígono</button>
+        <button data-tpl="star"><svg viewBox="0 0 34 26"><path d="M17 2v22M5 7l24 12M29 7L5 19" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Estrella</button>
+      </div>
+      <div class="tplform" id="tplForm" hidden>
+        <div class="form2">
+          <div class="field"><label for="tSize">Tamaño (m)</label><input id="tSize" value="10"></div>
+          <div class="field"><label for="tSpacing">Separación / lados</label><input id="tSpacing" value="2"></div>
+          <div class="field"><label for="tDepth">Profundidad (m)</label><input id="tDepth" value="2"></div>
+          <div class="field"><label for="tHeading">Rumbo (°)</label><input id="tHeading" value="0"></div>
+        </div>
+        <p class="hint-sm">Se coloca delante del robot (o en el origen si no hay posición).</p>
+        <button class="btn primary" id="tplApply" style="width:100%">Añadir a la misión</button>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ================= BEHAVIOUR TREES ================= -->
+<section class="view" id="v-bt" role="tabpanel" aria-label="Comportamientos">
+  <div class="panel">
+    <h2>Árboles<button class="btn small ghost end" id="btNew" title="Nuevo árbol"><i data-lucide="plus"></i></button></h2>
+    <div class="btlist" id="btList"><p class="muted">Cargando…</p></div>
+  </div>
+  <div class="panel btcanvas">
+    <div class="bttools">
+      <button class="btn small go" id="btRun"><i data-lucide="play"></i>Ejecutar</button>
+      <button class="btn small" id="btStop"><i data-lucide="square"></i>Detener</button>
+      <button class="btn small" id="btEdit" aria-pressed="false"><i data-lucide="code"></i>XML</button>
+      <span class="synthetic" id="btState"></span>
+    </div>
+    <svg id="btsvg" aria-label="Árbol de comportamiento"></svg>
+    <div class="bteditor" id="btEditor" hidden>
+      <textarea id="btXml" spellcheck="false" aria-label="XML del árbol"></textarea>
+      <div class="btedit-bar"><span class="err-inline" id="btErr"></span><button class="btn small primary" id="btSave"><i data-lucide="save"></i>Guardar</button></div>
+    </div>
+    <div class="legend"><span><span class="dot ok"></span>Éxito</span><span><span class="dot warn"></span>En curso</span><span><span class="dot err"></span>Fallo</span><span><span class="dot off"></span>Sin ejecutar</span></div>
+  </div>
+  <div class="panel">
+    <h2>Nodo seleccionado</h2>
+    <div class="kv" id="btNode"><span>—</span><b></b></div>
+    <h2 style="margin-top:20px">Pizarra</h2>
+    <div class="kv" id="btBoard"><span>—</span><b></b></div>
+    <h2 style="margin-top:20px">Hojas disponibles</h2>
+    <p class="hint-sm" id="btLeaves"></p>
+  </div>
+</section>
+
+<!-- ================= TELEMETRÍA ================= -->
+<section class="view" id="v-telem" role="tabpanel" aria-label="Telemetría">
+  <div class="panel chart"><h2>Profundidad (m)<span class="end legend-in"><i style="background:var(--info)"></i>profundidad</span></h2><svg data-chart="depth"></svg></div>
+  <div class="panel chart"><h2>Batería (V)<span class="end legend-in"><i style="background:var(--fg)"></i>tensión</span></h2><svg data-chart="volt"></svg></div>
+  <div class="panel chart"><h2>Actitud (°)<span class="end legend-in"><i style="background:var(--deck)"></i>cabeceo <i style="background:var(--info)"></i>alabeo</span></h2><svg data-chart="att"></svg></div>
+  <div class="panel chart"><h2>Velocidad (m/s)<span class="end legend-in"><i style="background:var(--ok)"></i>avance <i style="background:var(--info)"></i>lateral <i style="background:var(--deck)"></i>vertical</span></h2><svg data-chart="vel"></svg></div>
+</section>
+
+<!-- ================= 3D ================= -->
+<section class="view" id="v-3d" role="tabpanel" aria-label="Vista 3D">
+  <div class="panel vz-side">
+    <div class="vz-bar"><h2>Displays</h2>
+      <button class="iconbtn" id="vzOpen" title="Abrir configuración (JSON)" aria-label="Abrir configuración"><i data-lucide="folder-open"></i></button>
+      <button class="iconbtn" id="vzSave" title="Guardar configuración (JSON)" aria-label="Guardar configuración"><i data-lucide="save"></i></button>
+      <button class="iconbtn" id="vzReset" title="Displays por defecto" aria-label="Displays por defecto"><i data-lucide="rotate-ccw"></i></button>
+      <input type="file" id="vzFile" accept=".json,application/json" hidden></div>
+    <details class="vz-global" open><summary>Opciones globales</summary><div id="vzGlobal"></div></details>
+    <div class="vz-list" id="vzDisplays"></div>
+    <button class="btn small vz-addbtn" id="vzAdd"><i data-lucide="plus"></i>Añadir</button>
+  </div>
+  <div class="panel viewport3d" id="vp3d">
+    <div class="vz-tools" id="vzTools" role="toolbar" aria-label="Herramientas"></div>
+    <div class="vz-overlays" id="vzOverlays"></div>
+    <div class="vz-foot"><span id="vzHint"></span><span id="vzFps"></span></div>
+    <div class="empty3d" id="empty3d"><i data-lucide="box"></i><b>Esperando la posición del robot</b><span>Llega por /tf o navigator/navigation</span></div>
+  </div>
+  <div class="panel vz-right">
+    <h2>Vista</h2>
+    <div class="vz-form" id="vzView"></div>
+    <button class="btn small" id="resetView"><i data-lucide="scan"></i>Encuadrar</button>
+    <h2>Selección</h2>
+    <p class="vz-sel" id="vzSel">Usa Medir o Publicar punto.</p>
+    <h2>Marcos TF</h2>
+    <div class="tflist" id="tfList"><p class="muted">Sin /tf todavía.</p></div>
+  </div>
+  <dialog class="vz-dlg" id="vzAddDlg" aria-label="Añadir display">
+    <header><b>Añadir display</b><button class="iconbtn" data-close aria-label="Cerrar"><i data-lucide="x"></i></button></header>
+    <div class="vz-cols">
+      <section><h3>Por tipo</h3><div id="vzAddByType" class="vz-picks"></div></section>
+      <section><h3>Por topic</h3><div id="vzAddByTopic" class="vz-picks"></div></section>
+    </div>
+  </dialog>
+</section>
+
+<!-- ================= DIAGNÓSTICO ================= -->
+<section class="view" id="v-plots" role="tabpanel" aria-label="Gráficas">
+  <aside class="pj-side">
+    <div class="pj-search">
+      <input id="pjSearch" type="search" placeholder="Buscar topic o campo…" aria-label="Buscar topic o campo" autocomplete="off">
+      <button class="btn small" id="pjRefresh" title="Actualizar la lista de topics" aria-label="Actualizar la lista de topics"><i data-lucide="refresh-cw"></i></button>
+    </div>
+    <small class="pj-count" id="pjCount"></small>
+    <div class="pj-tree" id="pjTree" role="tree" aria-label="Topics"><p class="pj-empty">Cargando topics…</p></div>
+    <p class="pj-help">Arrastra un campo (o un topic entero) a una gráfica. Al borde, la parte en dos. Con Mayús, pasa a ser XY. Rueda: zoom · arrastrar: recuadro · botón derecho: mover · doble clic: directo.</p>
+  </aside>
+  <div class="pj-main">
+    <div class="pj-bar">
+      <div class="pj-tabs" id="pjTabs"></div>
+      <button class="btn small" id="pjAddTab" title="Nueva pestaña" aria-label="Nueva pestaña"><i data-lucide="plus"></i></button>
+      <span class="pj-sp"></span>
+      <label class="pj-win">Ventana <input id="pjWin" inputmode="decimal" aria-label="Ventana de tiempo en segundos"> s</label>
+      <button class="btn small" id="pjPause" aria-pressed="false"><i data-lucide="pause"></i>Pausar</button>
+      <button class="btn small" id="pjClear" title="Borrar los datos recibidos"><i data-lucide="eraser"></i>Borrar</button>
+      <button class="btn small" id="pjCsv" title="Exportar los datos de esta pestaña"><i data-lucide="download"></i>CSV</button>
+      <button class="btn small" id="pjSave" title="Guardar la disposición en un archivo"><i data-lucide="save"></i>Guardar</button>
+      <button class="btn small" id="pjOpen" title="Abrir una disposición guardada"><i data-lucide="folder-open"></i>Abrir</button>
+      <input type="file" id="pjFile" accept=".json,application/json" hidden>
+    </div>
+    <div class="pj-grid" id="pjGrid"></div>
+  </div>
+</section>
+
+<section class="view" id="v-diag" role="tabpanel" aria-label="Diagnóstico">
+  <div class="panel diaglist">
+    <h2>Estado del sistema<span class="end" id="diagSummary"></span></h2>
+    <div id="diagGroups"><p class="muted">Esperando /diagnostics_agg…</p></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px;min-height:0">
+    <div class="panel">
+      <h2>Arquitectura SURA</h2>
+      <div class="row"><span>Estado</span><span class="chip" id="suraState"><span class="dot off"></span>—</span></div>
+      <div class="row"><span>Comando</span><code class="cmd" id="suraCmd">—</code></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn" id="suraRestart"><i data-lucide="rotate-ccw"></i>Reiniciar</button><button class="btn" id="suraStop"><i data-lucide="power"></i>Detener</button></div>
+    </div>
+    <div class="panel loglist">
+      <h2>Registro de SURA<span class="end synthetic">sura_view/log</span></h2>
+      <div class="logbox" id="suraLog"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DESARROLLADOR ================= -->
+<section class="view" id="v-dev" role="tabpanel" aria-label="Herramientas de desarrollador">
+  <div class="panel topics">
+    <h2>Topics<span class="end synthetic" id="topicCount"></span></h2>
+    <input placeholder="Filtrar topics…" aria-label="Filtrar topics" id="topicFilter">
+    <div id="topicList"></div>
+  </div>
+  <div class="panel term">
+    <div class="tt" id="termTabs"><button aria-pressed="true" data-term="echo">Echo</button><button aria-pressed="false" data-term="new"><i data-lucide="plus"></i>Terminal</button></div>
+    <pre id="echoBox" class="echo">Elige un topic para ver sus mensajes.</pre>
+    <div id="termBox" class="termbox" hidden></div>
+  </div>
+  <div class="panel logs">
+    <h2>Logs (/rosout)<span class="end"><select id="logLevel" aria-label="Nivel mínimo"><option value="10">Todo</option><option value="20" selected>Info</option><option value="30">Avisos</option><option value="40">Errores</option></select></span></h2>
+    <div id="rosout"></div>
+  </div>
+</section>
+
+<!-- comprobaciones antes de inmersión -->
+<div class="scrim" id="scrim"></div>
+<aside class="sheet" id="sheet" aria-label="Comprobaciones antes de inmersión">
+  <header><h3>Comprobaciones antes de inmersión</h3><p class="muted" style="font-size:14px">Mira el valor real de cada punto y márcalo como correcto o como fallo.</p></header>
+  <div class="body" id="checks"></div>
+  <footer><button class="btn ghost" id="checksClose">Más tarde</button><button class="btn primary" id="checksDone" style="flex:1" disabled>Terminar comprobaciones</button></footer>
+</aside>
+
+<!-- aviso: IMU sin calibrar -->
+<aside class="imu-ask glass" id="imuAsk" hidden role="alertdialog" aria-labelledby="imuAskTitle">
+  <i data-lucide="compass"></i>
+  <div>
+    <b id="imuAskTitle">La IMU no está bien calibrada</b>
+    <ul id="imuAskWhy"></ul>
+    <p>¿Quieres calibrarla ahora? Tarda un par de minutos y tendrás que mover el robot.</p>
+    <div class="imu-ask-btns"><button class="btn small ghost" id="imuAskLater">Ahora no</button><button class="btn small primary" id="imuAskGo"><i data-lucide="compass"></i>Calibrar</button></div>
+  </div>
+</aside>
+
+<!-- asistente de calibración de la IMU -->
+<dialog class="imu-dlg" id="imuDlg" aria-labelledby="imuTitle">
+  <header>
+    <h2>Calibrar la IMU</h2>
+    <ol class="imu-steps" id="imuSteps"></ol>
+    <div class="imu-prog" id="imuProg" role="progressbar" aria-label="Progreso de la calibración" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="imuBar"></i></div>
+    <span class="imu-pct" id="imuPct">0 %</span>
+  </header>
+  <div class="imu-body">
+    <div class="imu-stage" id="imuStage">
+      <div class="imu-rose" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>O</span></div>
+      <span class="imu-motion" hidden></span>
+    </div>
+    <div class="imu-side">
+      <h3 id="imuTitle" aria-live="polite"></h3>
+      <p id="imuText"></p>
+      <div class="imu-phase" id="imuPhase" hidden><div class="imu-prog small"><i id="imuPhaseBar"></i></div></div>
+      <div class="imu-oct" id="imuOct" hidden></div>
+      <div class="imu-dirs" id="imuDirs" hidden></div>
+      <div class="imu-result" id="imuResult" hidden></div>
+    </div>
+  </div>
+  <footer>
+    <button class="btn ghost" id="imuCancel">Cancelar</button>
+    <button class="btn" id="imuRetry" hidden><i data-lucide="rotate-ccw"></i>Repetir</button>
+    <button class="btn" id="imuClose" hidden>Hecho</button>
+    <button class="btn primary big" id="imuNext" hidden><i data-lucide="play"></i>Empezar</button>
+  </footer>
+</dialog>
+
+<!-- visor de texto (perfil del robot) -->
+<dialog class="viewer" id="viewer"><header><b id="viewerTitle"></b><button class="iconbtn" id="viewerClose" aria-label="Cerrar"><i data-lucide="x"></i></button></header><pre id="viewerText"></pre></dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="vendor/lucide.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

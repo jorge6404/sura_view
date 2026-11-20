@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>sura_view</name>
+  <version>0.1.0</version>
+  <description>Estación de tierra web de SURA: pilotaje con cámara, misión con waypoints, behaviour trees, vista 3D, diagnóstico y herramientas de desarrollador, en simulación y en real</description>
+  <maintainer email="jorgee6404@gmail.com">jorge</maintainer>
+  <license>TODO: License declaration</license>
+
+  <!-- Todo lo de aquí es de ROS 2 Humble (apt / rosdep) salvo sura_msgs, que está en workspace.repos
+       de sura_ws_meta: sin él, rosbridge no puede traducir los mensajes de SURA. Los robots
+       (*_description) NO hacen falta: sura_view lleva una copia en robots/. -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>rosidl_runtime_py</exec_depend>
+  <exec_depend>rosidl_parser</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>action_msgs</exec_depend>
+  <exec_depend>lifecycle_msgs</exec_depend>
+  <exec_depend>tf2_msgs</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>sura_msgs</exec_depend>
+  <!-- puente navegador <-> ROS 2 y consultas de topics/parámetros desde la web -->
+  <exec_depend>rosbridge_server</exec_depend>
+  <exec_depend>rosapi</exec_depend>
+  <!-- «Grabar rosbag» desde el menú -->
+  <exec_depend>ros2bag</exec_depend>
+  <!-- Opcionales (si no están, sura_view arranca igual y avisa de lo que falta):
+       sura_actions (misiones, modos de control y behaviour trees), sura_teleop (mando),
+       sura_imu (calibración de la IMU), sura_bringup (botón «Lanzar SURA»). -->
+
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -1,0 +1,341 @@
+<?xml version="1.0" ?>
+<robot family="underwater" name="bluerov">
+  <link name="__sura_robot__/base_link" tf_type="base">
+    <visual>
+      <geometry>
+        <mesh filename="package://bluerov_description/urdf/meshes/bluerov2_heavy_reach/bluerov2_heavy_reach.dae" scale="0.025 0.025 0.025"/>
+      </geometry>
+      <origin rpy="3.1416 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+  <link name="__sura_robot__/imu_link" tf_type="sensor"/>
+  <joint name="__sura_robot__/imu_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/imu_link"/>
+    <origin rpy="-1.57 0 0" xyz="0.1043 -0.083264 -0.0547"/>
+  </joint>
+  <link name="__sura_robot__/imu_link_flu" tf_type="sensor"/>
+  <joint name="__sura_robot__/imu_flu_joint" type="fixed">
+    <parent link="__sura_robot__/imu_link"/>
+    <child link="__sura_robot__/imu_link_flu"/>
+    <origin rpy="3.14159265359 0 0.0" xyz="0 0 0"/>
+  </joint>
+  <link name="__sura_robot__/dvl_link" tf_type="sensor"/>
+  <joint name="__sura_robot__/dvl_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/dvl_link"/>
+    <origin rpy="0 0 0" xyz="0.0 -0.23 -0.05"/>
+  </joint>
+  <link name="__sura_robot__/pressure_link" tf_type="sensor"/>
+  <joint name="__sura_robot__/pressure_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/pressure_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <link name="__sura_robot__/camera_down" tf_type="sensor"/>
+  <joint name="__sura_robot__/camera_down_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/camera_down"/>
+    <origin rpy="0 0 0.0" xyz="0.006 -0.13 0.143"/>
+  </joint>
+  <link name="__sura_robot__/camera_down/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/camera_down_optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/camera_down"/>
+    <child link="__sura_robot__/camera_down/optical_frame"/>
+    <origin rpy="0.0 0.0 1.57" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/camera_front" tf_type="sensor"/>
+  <joint name="__sura_robot__/camera_front_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/camera_front"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.17 -0.005 -0.035"/>
+  </joint>
+  <link name="__sura_robot__/camera_front/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/camera_front_optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/camera_front"/>
+    <child link="__sura_robot__/camera_front/optical_frame"/>
+    <origin rpy="-1.57 3.14 -1.57" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/camera_right" tf_type="sensor"/>
+  <joint name="__sura_robot__/camera_right_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/camera_right"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.14 0.007 -0.1"/>
+  </joint>
+  <link name="__sura_robot__/camera_right/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/camera_right_optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/camera_right"/>
+    <child link="__sura_robot__/camera_right/optical_frame"/>
+    <origin rpy="-1.57 3.14 -1.57" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="__sura_robot__/camera_left" tf_type="sensor"/>
+  <joint name="__sura_robot__/camera_left_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/camera_left"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.14 -0.06 -0.1"/>
+  </joint>
+  <link name="__sura_robot__/camera_left/optical_frame" tf_type="sensor"/>
+  <joint name="__sura_robot__/camera_left_optical_frame_joint" type="fixed">
+    <parent link="__sura_robot__/camera_left"/>
+    <child link="__sura_robot__/camera_left/optical_frame"/>
+    <origin rpy="-1.57 3.14 -1.57" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="zed_camera_camera_link" tf_type="fixed"/>
+  <joint name="__sura_robot__/zed_camera_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="zed_camera_camera_link"/>
+    <origin rpy="3.1416 0.0 0.0" xyz="0.195659 0.1 -0.04"/>
+  </joint>
+  <link name="__sura_robot__/modem_link" tf_type="sensor">
+    </link>
+  <joint name="__sura_robot__/modem_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/modem_link"/>
+    <origin rpy="0 0 0" xyz="-0.15 0 0.10"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_R_FORWARD_FRONT" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_R_FORWARD_FRONT" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_R_FORWARD_FRONT"/>
+    <origin rpy="0.0 0.0 -0.7853" xyz="0.145737 0.091717 0.04783"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_L_FORWARD_FRONT" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_L_FORWARD_FRONT" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_L_FORWARD_FRONT"/>
+    <origin rpy="0.0 0.0 0.7853" xyz="0.145737 -0.09814 0.04783"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_R_FORWARD_REAR" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_R_FORWARD_REAR" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_R_FORWARD_REAR"/>
+    <origin rpy="0.0 0.0 -2.35619" xyz="-0.145419 0.091717 0.04783"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_L_FORWARD_REAR" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_L_FORWARD_REAR" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_L_FORWARD_REAR"/>
+    <origin rpy="0.0 0.0 2.35619" xyz="-0.145419 -0.09814 0.04783"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_R_UP_FRONT" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_R_UP_FRONT" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_R_UP_FRONT"/>
+    <origin rpy="1.57 1.57 0.0" xyz="0.124709 0.209 -0.013231"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_L_UP_FRONT" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_L_UP_FRONT" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_L_UP_FRONT"/>
+    <origin rpy="1.57 1.57 0.0" xyz="0.124709 -0.220356 -0.013231"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_R_UP_REAR" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_R_UP_REAR" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_R_UP_REAR"/>
+    <origin rpy="1.57 1.57 0.0" xyz="-0.112476 0.209 -0.013231"/>
+  </joint>
+  <link name="__sura_robot__/Thruster_L_UP_REAR" tf_type="thruster"/>
+  <joint name="__sura_robot__/Thruster_L_UP_REAR" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/Thruster_L_UP_REAR"/>
+    <origin rpy="1.57 1.57 0.0" xyz="-0.112476 -0.220356 -0.013231"/>
+  </joint>
+  <link name="__sura_robot__/lights_link" tf_type="actuator"/>
+  <joint name="__sura_robot__/lights_joint" type="fixed">
+    <parent link="__sura_robot__/base_link"/>
+    <child link="__sura_robot__/lights_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <ros2_control name="__sura_robot___thrusters" type="system">
+    <hardware>
+      <plugin>sura_hardware_interface/ThrustersSystem</plugin>
+      <param name="environment">real</param>
+    </hardware>
+    <joint name="__sura_robot__/Thruster_R_FORWARD_FRONT">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/__sura_robot__/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">0</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_L_FORWARD_FRONT">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/__sura_robot__/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">1</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_R_FORWARD_REAR">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/__sura_robot__/controller/thruster_setpoints_sim</param>
+      <param name="inverted">true</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">2</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_L_FORWARD_REAR">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/__sura_robot__/controller/thruster_setpoints_sim</param>
+      <param name="inverted">true</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">3</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_R_UP_FRONT">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/__sura_robot__/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">4</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_L_UP_FRONT">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/__sura_robot__/controller/thruster_setpoints_sim</param>
+      <param name="inverted">true</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">5</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_R_UP_REAR">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/__sura_robot__/controller/thruster_setpoints_sim</param>
+      <param name="inverted">true</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">6</param>
+    </joint>
+    <joint name="__sura_robot__/Thruster_L_UP_REAR">
+      <command_interface name="effort"/>
+      <state_interface name="effort"/>
+      <param name="lookup_csv">config/t200_lookup.csv</param>
+      <param name="stonefish_topic">/__sura_robot__/controller/thruster_setpoints_sim</param>
+      <param name="inverted">false</param>
+      <param name="pwm_offset">0.0</param>
+      <param name="channel">7</param>
+    </joint>
+  </ros2_control>
+  <ros2_control name="__sura_robot___sensors" type="system">
+    <hardware>
+      <plugin>sura_hardware_interface/SensorsSystem</plugin>
+      <param name="environment">real</param>
+    </hardware>
+    <sensor name="imu_sensor">
+      <param name="interface">sura_hardware_interface/ImuInterface</param>
+      <param name="broadcaster">imu_broadcaster</param>
+      <param name="read_rate_hz">100.0</param>
+      <param name="frame_id">__sura_robot__/imu_link</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/imu</param>
+      <param name="msg_type">sensor_msgs/msg/Imu</param>
+      <state_interface name="orientation.x"/>
+      <state_interface name="orientation.y"/>
+      <state_interface name="orientation.z"/>
+      <state_interface name="orientation.w"/>
+      <state_interface name="angular_velocity.x"/>
+      <state_interface name="angular_velocity.y"/>
+      <state_interface name="angular_velocity.z"/>
+      <state_interface name="linear_acceleration.x"/>
+      <state_interface name="linear_acceleration.y"/>
+      <state_interface name="linear_acceleration.z"/>
+      <state_interface name="sample_time.sec"/>
+      <state_interface name="sample_time.nanosec"/>
+    </sensor>
+    <sensor name="magnetometer_sensor">
+      <param name="interface">sura_hardware_interface/MagnetometerInterface</param>
+      <param name="broadcaster">magnetometer_broadcaster</param>
+      <param name="read_rate_hz">100.0</param>
+      <param name="frame_id">__sura_robot__/imu_link</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/magnetometer</param>
+      <param name="msg_type">sensor_msgs/msg/MagneticField</param>
+      <state_interface name="magnetic_field.x"/>
+      <state_interface name="magnetic_field.y"/>
+      <state_interface name="magnetic_field.z"/>
+      <state_interface name="sample_time.sec"/>
+      <state_interface name="sample_time.nanosec"/>
+    </sensor>
+    <sensor name="pressure_sensor">
+      <param name="interface">sura_hardware_interface/PressureInterface</param>
+      <param name="broadcaster">pressure_broadcaster</param>
+      <param name="read_rate_hz">50.0</param>
+      <param name="frame_id">__sura_robot__/pressure_link</param>
+      <param name="i2c_bus">6</param>
+      <param name="i2c_address">118</param>
+      <param name="pressure_offset_pa">0.0</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/pressure</param>
+      <param name="msg_type">sensor_msgs/msg/FluidPressure</param>
+      <state_interface name="fluid_pressure"/>
+    </sensor>
+    <sensor name="dvl_sensor">
+      <param name="interface">sura_hardware_interface/DvlInterface</param>
+      <param name="broadcaster">dvl75_velocity_broadcaster</param>
+      <param name="broadcaster">dvl75_altitude_broadcaster</param>
+      <param name="broadcaster">dvl75_gps_broadcaster</param>
+      <param name="read_rate_hz">20.0</param>
+      <param name="frame_id">__sura_robot__/dvl_link</param>
+      <param name="dvl_ip">192.168.1.236</param>
+      <param name="dvl_listen_port">27000</param>
+      <param name="dvl_command_port">50000</param>
+      <param name="dvl_min_confidence">10.0</param>
+      <param name="dvl_timeout_s">1.0</param>
+      <param name="sim_dvl_confidence">100.0</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/dvl</param>
+      <param name="stonefish_altitude_topic">/__sura_robot__/stonefish/sensors/dvl_altitude</param>
+      <param name="stonefish_gps_topic">/__sura_robot__/stonefish/sensors/gps</param>
+      <param name="msg_type">geometry_msgs/msg/TwistStamped</param>
+      <state_interface name="linear_velocity.x"/>
+      <state_interface name="linear_velocity.y"/>
+      <state_interface name="linear_velocity.z"/>
+      <state_interface name="angular_velocity.x"/>
+      <state_interface name="angular_velocity.y"/>
+      <state_interface name="angular_velocity.z"/>
+      <state_interface name="distance_z"/>
+      <state_interface name="confidence"/>
+      <state_interface name="gps.latitude"/>
+      <state_interface name="gps.longitude"/>
+      <state_interface name="gps.altitude"/>
+      <state_interface name="gps.valid"/>
+    </sensor>
+    <sensor name="battery_sensor">
+      <param name="interface">sura_hardware_interface/BatteryInterface</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/battery</param>
+      <param name="broadcaster">battery_broadcaster</param>
+      <param name="read_rate_hz">2.0</param>
+      <param name="frame_id">__sura_robot__/base_link</param>
+      <state_interface name="voltage"/>
+      <state_interface name="current"/>
+      <state_interface name="percentage"/>
+      <state_interface name="present"/>
+    </sensor>
+    <sensor name="leak_sensor">
+      <param name="interface">sura_hardware_interface/LeakInterface</param>
+      <param name="stonefish_topic">/__sura_robot__/stonefish/sensors/leak</param>
+      <param name="broadcaster">leak_broadcaster</param>
+      <param name="read_rate_hz">1.0</param>
+      <param name="frame_id">__sura_robot__/base_link</param>
+      <state_interface name="leak"/>
+    </sensor>
+  </ros2_control>
+  <ros2_control name="__sura_robot___actuators" type="system">
+    <hardware>
+      <plugin>sura_hardware_interface/ActuatorsSystem</plugin>
+      <param name="environment">real</param>
+    </hardware>
+    <joint name="__sura_robot__/lights_joint">
+      <param name="interface">sura_hardware_interface/LightsBluerovInterface</param>
+      <command_interface name="pwm_us"/>
+      <state_interface name="pwm_us"/>
+      <param name="channel">11</param>
+      <param name="controller">lights_controller</param>
+    </joint>
+  </ros2_control>
+</robot>
